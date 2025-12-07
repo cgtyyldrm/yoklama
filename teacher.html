@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğretmen Paneli - QR Yoklama</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Ders Oluştur</h1>
+        <p>Yoklama almak için ders adını girin ve QR kod oluşturun.</p>
+
+        <div class="input-group">
+            <label for="className">Ders Adı</label>
+            <input type="text" id="className" placeholder="Örn: Matematik 101">
+        </div>
+
+        <button id="generateBtn" class="btn">QR Kod Oluştur</button>
+
+        <div id="qrcode"></div>
+
+        <div class="settings-panel">
+            <p style="margin-bottom: 10px; font-size: 0.9rem;">Sistem Ayarları</p>
+            <div class="input-group">
+                <label for="apiUrl">Google Apps Script Web App URL</label>
+                <input type="text" id="apiUrl"
+                    placeholder="https://script.google.com/macros/s/AKfycbxpQIE8xgooCWRBMsKcyiqJn--dqA4pkLugUli8U7PiABweLn9hn_fc6Zg6Y9XoulW0/exec">
+            </div>
+            <button id="saveSettings" class="btn btn-secondary" style="padding: 10px;">Kaydet</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">&larr; Ana
+                Sayfaya Dön</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
