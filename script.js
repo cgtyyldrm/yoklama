@@ -244,3 +244,27 @@ if (attendanceForm) {
         }
     });
 }
+
+// ==========================================
+// GİRİŞ KONTROLLERİ (Sadece Harf / Sadece Sayı)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. İSİM ALANI KONTROLÜ (Sadece Harf ve Boşluk)
+    const nameInput = document.getElementById('studentName');
+    if (nameInput) {
+        nameInput.addEventListener('input', function(e) {
+            // Türkçe karakterler dahil harf olmayan her şeyi sil
+            this.value = this.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ\s]/g, '');
+        });
+    }
+
+    // 2. NUMARA ALANI KONTROLÜ (Sadece Sayı)
+    const numberInput = document.getElementById('studentNumber');
+    if (numberInput) {
+        numberInput.addEventListener('input', function(e) {
+            // Rakam olmayan her şeyi sil
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    }
+});
