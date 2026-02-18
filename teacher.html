@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğretmen Paneli - QR Yoklama</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Giriş Yap</h2>
+            <p>Öğretmen paneline erişmek için bilgilerinizi girin.</p>
+            <form id="loginForm" autocomplete="on">
+                <div class="input-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" id="emailInput" required placeholder="ornek@okul.com" autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" id="passwordInput" required placeholder="******"
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn">Giriş</button>
+            </form>
+            <div id="loginError" class="error-message hidden">Hatalı bilgi!</div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD (Hidden by default) -->
+    <div id="dashboard" class="container hidden" style="max-width: 800px;">
+        <div class="header-row">
+            <h1>Öğretmen Paneli</h1>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span id="teacherNameDisplay" style="color:var(--primary-color); font-weight:600;"></span>
+                <button id="logoutBtn" class="btn-secondary" style="width:auto; padding: 8px 16px;">Çıkış</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="courses">Derslerim</button>
+            <button class="tab-btn" data-tab="create">Ders Oluştur</button>
+            <button class="tab-btn" data-tab="roster">Öğrenci Listesi</button>
+            <button class="tab-btn" data-tab="settings">Ayarlar</button>
+        </div>
+
+        <!-- TAB CONTENT: COURSES -->
+        <div id="coursesTab" class="tab-content active">
+            <div id="loadingCourses" class="loading hidden">Yükleniyor...</div>
+            <div id="coursesList" class="cards-grid">
+                <!-- Course Cards will be injected here -->
+            </div>
+
+            <!-- Session View (Drill-down) -->
+            <div id="sessionView" class="hidden">
+                <button id="backToCourses" class="btn-secondary">&larr; Derslere Dön</button>
+                <h2 id="currentCourseTitle" style="margin: 20px 0;">Matematik 101</h2>
+
+                <div class="action-bar">
+                    <button id="showQrBtn" class="btn" style="width: auto;">QR Kod Göster</button>
+                </div>
+                <div id="courseQr" style="margin: 20px auto; display:none;"></div>
+
+                <h3>Haftalık Program</h3>
+                <div class="table-wrapper">
+                    <table id="sessionsTable">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sessions injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: CREATE COURSE -->
+        <div id="createTab" class="tab-content">
+            <h2>Yeni Ders Oluştur</h2>
+            <form id="createCourseForm">
+                <div class="input-group">
+                    <label>Ders Adı</label>
+                    <input type="text" id="newCourseName" required placeholder="Örn: Fizik 101">
+                </div>
+                <div class="row">
+                    <div class="input-group">
+                        <label>Dönem Başlangıcı</label>
+                        <input type="date" id="termStart" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Dönem Bitişi</label>
+                        <input type="date" id="termEnd" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Ders Günü</label>
+                    <select id="classDay" required>
+                        <option value="1">Pazartesi</option>
+                        <option value="2">Salı</option>
+                        <option value="3">Çarşamba</option>
+                        <option value="4">Perşembe</option>
+                        <option value="5">Cuma</option>
+                        <option value="6">Cumartesi</option>
+                        <option value="0">Pazar</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Oluştur</button>
+            </form>
+            <div id="createStatus" class="hidden"></div>
+        </div>
+
+        <!-- TAB CONTENT: ROSTER -->
+        <div id="rosterTab" class="tab-content">
+            <h2>Öğrenci Listesi Yükle (Roster)</h2>
+            <p>JSON formatında öğrenci listesi yükleyin veya manuel ekleyin.</p>
+            <div class="input-group">
+                <label>Ders Seçin</label>
+                <select id="rosterCourseSelect">
+                    <option value="">Yükleniyor...</option>
+                </select>
+            </div>
+
+            <div
+                style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid var(--border-color);">
+                <h3 style="margin-bottom:10px; font-size: 1rem;">Excel ile Yükle</h3>
+                <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                    <button id="downloadTemplateBtn" class="btn-secondary" style="font-size: 0.9rem;">📥 Şablon
+                        İndir</button>
+                    <input type="file" id="rosterFile" accept=".xlsx, .xls, .csv" style="display:none;">
+                    <button id="selectFileBtn" class="btn-secondary" style="font-size: 0.9rem;">📂 Dosya Seç</button>
+                </div>
+                <p id="fileNameDisplay" style="font-size: 0.8rem; margin-bottom:0;">Dosya seçilmedi</p>
+            </div>
+
+            <textarea id="rosterJson" rows="10" placeholder='[{"name": "Ali Veli", "number": "123"}, ...]'
+                style="width:100%; padding: 10px; background: rgba(0,0,0,0.2); color: white; border: 1px solid var(--border-color); border-radius: 8px;"></textarea>
+            <button id="uploadRosterBtn" class="btn" style="margin-top:10px;">Listeyi Kaydet</button>
+            <div id="rosterStatus"></div>
+        </div>
+
+        <!-- TAB CONTENT: SETTINGS -->
+        <div id="settingsTab" class="tab-content">
+            <h2>Ayarlar</h2>
+            <div class="input-group">
+                <label>Google Apps Script URL</label>
+                <input type="text" id="apiUrl" placeholder="https://script.google.com/...">
+            </div>
+            <button id="saveSettingsBtn" class="btn">Kaydet</button>
+        </div>
+
+    </div>
+
+    <!-- ATTENDANCE MODAL -->
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 id="attModalTitle">Yoklama Listesi</h2>
+                <button class="btn-xs danger" onclick="closeAttendanceModal()">Kapat</button>
+            </div>
+
+            <div id="attListLoading" class="loading hidden">Yükleniyor...</div>
+
+            <div class="table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                <table id="attTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Öğrenci</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attTableBody">
+                        <!-- Injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Developed by <span style="color: var(--primary-color); font-weight: 600;">Çağatay YILDIRIM</span>
+            - Tüm Hakları Saklıdır.</p>
+    </div>
+
+    <script src="teacher.js"></script>
+</body>
+
+</html>

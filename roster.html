@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roster Yönetimi - QR Yoklama</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Roster Yönetimi</h1>
+
+        <div class="input-group">
+            <label for="classNameRoster">Ders Adı</label>
+            <input type="text" id="classNameRoster" placeholder="Örn: Matematik 101">
+        </div>
+
+        <div class="input-group">
+            <label for="rosterCsv">Roster (CSV: Ad Soyad,Öğrenci Numarası)</label>
+            <textarea id="rosterCsv" rows="6" placeholder="Örnek:\nAhmet Yılmaz,12345\nAyşe Demir,23456"></textarea>
+        </div>
+
+        <button id="uploadRosterBtn" class="btn">Roster Yükle</button>
+
+        <hr>
+
+        <h2>Haftalık Kontrol</h2>
+        <div class="input-group">
+            <label for="startDate">Başlangıç Tarihi</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="input-group">
+            <label for="endDate">Bitiş Tarihi</label>
+            <input type="date" id="endDate">
+        </div>
+        <button id="checkAttendanceBtn" class="btn btn-secondary">Kontrol Et</button>
+
+        <div id="results" style="margin-top:16px"></div>
+
+        <div style="margin-top:20px">
+            <a href="teacher.html">&larr; Öğretmen Paneline Dön</a>
+        </div>
+    </div>
+
+    <script src="roster.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoklama Formu - QR Yoklama</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Öğrenci Portalı</h1>
+
+        <div class="tabs" style="justify-content: center; margin-bottom: 20px;">
+            <button class="tab-btn active" data-tab="attendance">Yoklama Ver</button>
+            <button class="tab-btn" data-tab="stats">Devamsızlık Durumu</button>
+        </div>
+
+        <!-- TAB: ATTENDANCE FORM -->
+        <div id="attendanceTab" class="tab-content active">
+            <p>Ders: <span id="displayClassName" style="color: var(--primary-color); font-weight: bold;">...</span></p>
+
+            <form id="attendanceForm">
+                <input type="hidden" id="hiddenClassName">
+
+                <div class="input-group">
+                    <label for="studentName">Ad Soyad</label>
+                    <input type="text" id="studentName" required placeholder="Adınız Soyadınız">
+                </div>
+
+                <div class="input-group">
+                    <label for="studentNumber">Öğrenci Numarası</label>
+                    <input type="text" id="studentNumber" required placeholder="Numaranız">
+                </div>
+
+                <button type="submit" class="btn">Yoklamayı Gönder</button>
+            </form>
+
+            <div id="statusMessage"></div>
+        </div>
+
+        <!-- TAB: STATS -->
+        <div id="statsTab" class="tab-content">
+            <p>Devamsızlık durumunuzu sorgulamak için numaranızı girin.</p>
+            <div class="input-group">
+                <input type="text" id="statsStudentNumber" placeholder="Öğrenci Numarası">
+            </div>
+            <button id="checkStatsBtn" class="btn-secondary">Sorgula</button>
+
+            <div id="statsResult" class="hidden" style="margin-top: 20px;">
+                <!-- Stats injected here -->
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">&larr; Ana
+                Sayfa</a>
+        </div>
+
+        <div class="footer" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <p style="font-size: 0.8rem; margin-bottom: 0;">&copy; 2025 Developed by <span
+                    style="color: var(--primary-color); font-weight: 600;">Çağatay YILDIRIM</span><br>Tüm Hakları
+                Saklıdır.</p>
+        </div>
+    </div>
+
+    <!-- We'll reuse script.js but update it to handle student logic specifically -->
+    <script src="script.js"></script>
+</body>
+
+</html>
