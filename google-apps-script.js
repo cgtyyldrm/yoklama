@@ -331,6 +331,25 @@ function handleRecordAttendance(ss, data) {
     var course = data.course;
     var name = data.name;
     var number = String(data.number).trim(); // Normalize
+
+    // --- VALIDATION: Check Roster ---
+    var rosterSheet = getOrCreateSheet(ss, 'Rosters', ['Course Name', 'Student Name', 'Student Number']);
+    var rValues = rosterSheet.getDataRange().getValues();
+    var isEnrolled = false;
+    var targetNum = number.toLowerCase();
+
+    for (var i = 1; i < rValues.length; i++) {
+        // Course Name match AND Student Number match
+        if (rValues[i][0] === course && String(rValues[i][2]).trim().toLowerCase() === targetNum) {
+            isEnrolled = true;
+            break;
+        }
+    }
+
+    if (!isEnrolled) {
+        return responseError('Derse kayıtlı değilsiniz.');
+    }
+    // --------------------------------
     var todayStr = formatDateISO(new Date());
 
     var sessionsSheet = getOrCreateSheet(ss, 'Sessions', ['Course Name', 'Date', 'Status']);
