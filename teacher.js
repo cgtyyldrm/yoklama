@@ -378,7 +378,7 @@ function loadRosterCourses() {
     select.innerHTML = '<option>Yükleniyor...</option>';
 
     // Pass email here too if we want to only allow adding roster to OWN courses
-    const email = sessionStorage.getItem('teacher_email');
+    const email = localStorage.getItem('teacher_email');
 
     callApi('getCourses', { email: email }, 'GET')
         .then(data => {

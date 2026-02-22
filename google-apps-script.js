@@ -264,11 +264,15 @@ function handleCreateCourse(ss, data) {
 
     // Generate Sessions
     var sessionsSheet = getOrCreateSheet(ss, 'Sessions', ['Course Name', 'Date', 'Status']);
-    var startDate = new Date(startStr);
-    var endDate = new Date(endStr);
+
+    // Explicit local date parsing to avoid timezone-related day shifting
+    var sParts = startStr.split('-');
+    var d = new Date(parseInt(sParts[0], 10), parseInt(sParts[1], 10) - 1, parseInt(sParts[2], 10));
+    var eParts = endStr.split('-');
+    var endDate = new Date(parseInt(eParts[0], 10), parseInt(eParts[1], 10) - 1, parseInt(eParts[2], 10));
+
     var updates = [];
 
-    var d = new Date(startDate);
     while (d.getDay() !== dayOfWeek) {
         d.setDate(d.getDate() + 1);
     }
@@ -279,7 +283,12 @@ function handleCreateCourse(ss, data) {
     }
 
     if (updates.length > 0) {
-        sessionsSheet.getRange(sessionsSheet.getLastRow() + 1, 1, updates.length, 3).setValues(updates);
+        var startRow = sessionsSheet.getLastRow() + 1;
+        var maxRows = sessionsSheet.getMaxRows();
+        if (startRow + updates.length - 1 > maxRows) {
+            sessionsSheet.insertRowsAfter(maxRows, (startRow + updates.length - 1) - maxRows);
+        }
+        sessionsSheet.getRange(startRow, 1, updates.length, 3).setValues(updates);
     }
 
     return responseSuccess({ message: 'Course created', count: updates.length });
@@ -355,7 +364,6 @@ function handleRecordAttendance(ss, data) {
     var sessionsSheet = getOrCreateSheet(ss, 'Sessions', ['Course Name', 'Date', 'Status']);
     var sValues = sessionsSheet.getDataRange().getValues();
 
-    // Check for active session
     var activeSessionExists = false;
     for (var i = 1; i < sValues.length; i++) {
         var d = sValues[i][1];
@@ -363,6 +371,10 @@ function handleRecordAttendance(ss, data) {
         if (sValues[i][0] === course && dStr === todayStr && sValues[i][2] === 'Active') {
             activeSessionExists = true; break;
         }
+    }
+
+    if (!activeSessionExists) {
+        return responseError('Bugün bu ders için aktif bir oturum bulunmamaktadır.');
     }
 
     // Default status for QR scan is 'Present'
