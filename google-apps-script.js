@@ -368,7 +368,7 @@ function handleRecordAttendance(ss, data) {
     for (var i = 1; i < sValues.length; i++) {
         var d = sValues[i][1];
         var dStr = (d instanceof Date) ? formatDateISO(d) : d;
-        if (sValues[i][0] === course && dStr === todayStr && sValues[i][2] === 'Active') {
+        if (sValues[i][0] === course && dStr === todayStr && (sValues[i][2] === 'Active' || sValues[i][2] === 'Aktif')) {
             activeSessionExists = true; break;
         }
     }
@@ -413,7 +413,7 @@ function calculateSingleStudentStats(ss, course, studentNumber) {
 
     // Calculate Total Sessions for this Course
     for (var k = 1; k < sValues.length; k++) {
-        if (sValues[k][0] === course && sValues[k][2] === 'Active') {
+        if (sValues[k][0] === course && (sValues[k][2] === 'Active' || sValues[k][2] === 'Aktif')) {
             var sd = (sValues[k][1] instanceof Date) ? sValues[k][1] : new Date(sValues[k][1]);
             if (sd <= now) total++;
         }

@@ -250,15 +250,15 @@ function loadSessions(courseName) {
                     } catch (e) { console.error("Date parse error", e); }
 
                     let statusClass = (session.status === 'Active' || session.status === 'Aktif') ? 'status-active' : 'status-inactive';
-                    let displayStatus = (session.status === 'Active') ? 'Aktif' : (session.status === 'Cancelled' ? 'İptal' : session.status);
+                    let displayStatus = (session.status === 'Active' || session.status === 'Aktif') ? 'Aktif' : ((session.status === 'Cancelled' || session.status === 'İptal') ? 'İptal' : session.status);
 
                     row.innerHTML = `
                         <td>${dateDisplay}</td>
                         <td><span class="badge ${statusClass}">${displayStatus}</span></td>
                         <td>
                              <button class="btn-xs" onclick="viewAttendance('${courseName}', '${session.date}')">Yoklama</button>
-                             <button class="btn-xs warning" onclick="updateSession('${courseName}', '${session.date}', 'Aktif')">Aktif</button>
-                             <button class="btn-xs danger" onclick="updateSession('${courseName}', '${session.date}', 'İptal')">İptal</button>
+                             <button class="btn-xs warning" onclick="updateSession('${courseName}', '${session.date}', 'Active')">Aktif</button>
+                             <button class="btn-xs danger" onclick="updateSession('${courseName}', '${session.date}', 'Cancelled')">İptal</button>
                         </td>
                     `;
                     tbody.appendChild(row);
